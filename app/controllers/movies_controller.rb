@@ -11,17 +11,29 @@ class MoviesController < ApplicationController
     
     if (params.has_key?(:header))
       @header = params[:header]
+    elsif (session.has_key?(:header))
+      @header = session[:header]
     else
       @header = ""
     end
     
     if (params.has_key?(:ratings))
-      @ratings_to_show = params[:ratings].keys
+      if params[:ratings].keys.length == 1
+        @ratings_to_show = ['G', 'PG', 'PG-13', 'R']
+      else
+        @ratings_to_show = params[:ratings].keys
+      end
+    elsif (session.has_key?(:ratings_to_show))
+      @ratings_to_show = session[:ratings_to_show]
     else
       @ratings_to_show = []
     end
     
     @movies = Movie.with_ratings(@ratings_to_show).order(@header)
+    
+    @ratings_to_show.delete('Refresh') # Delete so that when it does contain I know it is from clicking the refresh button
+    session[:header] = @header
+    session[:ratings_to_show] = @ratings_to_show
   end
 
   def new
