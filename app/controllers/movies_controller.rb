@@ -9,13 +9,19 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
     
+    if (params.has_key?(:header))
+      @header = params[:header]
+    else
+      @header = ""
+    end
+    
     if (params.has_key?(:ratings))
       @ratings_to_show = params[:ratings].keys
     else
       @ratings_to_show = []
     end
     
-    @movies = Movie.with_ratings(@ratings_to_show)
+    @movies = Movie.with_ratings(@ratings_to_show).order(@header)
   end
 
   def new
